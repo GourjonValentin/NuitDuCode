@@ -10,6 +10,8 @@ COLOR_KEY = 5
 BG_COLOR = 1
 FOOTER_COLOR = 12
 
+MAX_VIE = 5
+
 EXPLOSION_ANIMATION = [(16, 104), (32, 104), (48, 104), (0, 120), (16, 120)]
 ENEMY_ANIMATION = [(0, 72), (8, 72), (16, 72), (24, 72), (32, 72)]
 
@@ -249,7 +251,11 @@ class App:
 
             for i in self.items:
                 if i.x < self.ship.x + self.ship.w and i.x + i.w > self.ship.x and i.y < self.ship.y + self.ship.h and i.y + i.h > self.ship.y:
-                    self.ship.upgrade()
+                    if isinstance(i, PowerUp):
+                        self.ship.upgrade()
+                    if isinstance(i, Heal):
+                        if self.ship.vie < MAX_VIE:
+                            self.ship.vie += 1
                     self.items.remove(i)
 
             if not self.enemies:
