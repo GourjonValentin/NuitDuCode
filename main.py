@@ -1,4 +1,5 @@
 import pyxel
+import math
 
 FPS = 60
 WIDTH = 256
@@ -181,7 +182,7 @@ class App:
                         self.spawn_item(projectile.x, projectile.y)
 
     def enemy_spawn(self):
-        for i in range(self.current_round * 10):
+        for i in range(pyxel.ceil(math.log(self.current_round + 1, 2) * 10)):
             coord = (pyxel.rndi(0, pyxel.width - 16), pyxel.rndi(0, -pyxel.height))
             self.enemies.append(Enemy(coord[0], coord[1], pyxel.rndi(0, 7)))
 
@@ -301,7 +302,7 @@ class App:
             pyxel.cls(BG_COLOR)
             pyxel.rect(0, pyxel.height - BOTTOM, pyxel.width, pyxel.height, FOOTER_COLOR)
             pyxel.text(WIDTH * 0.43, HEIGHT * 0.3, 'Game Over', 7)
-            pyxel.text(WIDTH * (0.45 - 0.01*len(str(self.score))), HEIGHT * 0.5, 'Score: ' + str(self.score), 7)
+            pyxel.text(WIDTH * (0.45 - 0.01 * len(str(self.score))), HEIGHT * 0.5, 'Score: ' + str(self.score), 7)
             pyxel.text(WIDTH * 0.33, HEIGHT * 0.7, 'Press Space to restart', 7)
 
         elif self.game_state == GAME_STATE['PAUSE']:
@@ -317,7 +318,6 @@ class App:
 
             for i in self.items:
                 i.draw()
-
 
             pyxel.text(WIDTH - 60, HEIGHT - BOTTOM * 0.6, 'Score: ' + str(self.score), 7)
             pyxel.text(WIDTH * 0.45, HEIGHT - BOTTOM * 0.8, 'Pause', 7)
