@@ -127,7 +127,8 @@ class PowerUp(Item):
         super().__init__(x, y)
         self.tilemap_coord = [48, 80]
 
-class Heal (Item):
+
+class Heal(Item):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.tilemap_coord = [40, 80]
@@ -153,6 +154,7 @@ class App:
                 self.items.append(PowerUp(x, y))
             else:
                 self.items.append(Heal(x, y))
+
     def enemy_collision(self):
         for enemy in self.enemies:
             # Check collision with player
@@ -173,7 +175,7 @@ class App:
                         self.enemies.remove(enemy)
                         projectile.disable = True
                         self.score += FPS * 5
-                          self.spawn_item(projectile.x, projectile.y)
+                        self.spawn_item(projectile.x, projectile.y)
 
     def enemy_spawn(self):
         for i in range(self.current_round * 10):
