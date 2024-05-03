@@ -18,6 +18,7 @@ class Ship:
         self.speed = 2
         self.vie = 3
         self.tilemap_coord = [0, 8]
+        self.tier = 0
 
     def check_screen_collision(self):
         if self.x < 0:
@@ -46,6 +47,11 @@ class Ship:
         for i in range(self.vie):
             pyxel.blt(10 + (i * 8), 243, 0, 40, 80, 8, 8, 5)
 
+    def upgrade(self):
+        if self.tier < 3:
+            self.tilemap_coord[0] += 16
+            self.tier += 1
+
 
 class Projectiles:
     def __init__(self, x, y):
@@ -60,7 +66,6 @@ class Projectiles:
         self.y -= self.speed
 
     def draw(self):
-        pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, 5)
         pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, COLOR_KEY)
 
 
@@ -88,6 +93,20 @@ class Enemy:
     def draw(self):
         pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, COLOR_KEY)
 
+class PowerUp:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.w = 8
+        self.h = 8
+        self.speed = 1
+        self.tilemap_coord = [48, 80]
+
+    def update(self):
+        self.y += self.speed
+
+    def draw(self):
+        pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, COLOR_KEY)
 
 class App:
     def __init__(self):
@@ -96,6 +115,7 @@ class App:
         self.ship = Ship(120, 120)
         self.projectiles = []
         self.reload = 0
+        self.powerups = []
 
         self.enemies = [Enemy(0, 0, 0), Enemy(0, 16, 1), Enemy(0, 32, 2)]
 
@@ -116,6 +136,20 @@ class App:
                 if projectile.y < 0:
                     self.projectiles.remove(projectile)
 
+        if pyxel.btnp(pyxel.KEY_R):
+            self.powerups.append(PowerUp(50, 50))
+
+        if self.powerups:
+            for powerup in self.powerups:
+                powerup.update()
+                if powerup.y > pyxel.height - BOTTOM:
+                    self.powerups.remove(powerup)
+
+        for powerup in self.powerups:
+            if powerup.x < self.ship.x + self.ship.w and powerup.x + powerup.w > self.ship.x and powerup.y < self.ship.y + self.ship.h and powerup.y + powerup.h > self.ship.y:
+                self.ship.upgrade()
+                self.powerups.remove(powerup)
+
         self.ship.update()
 
     def draw(self):
@@ -130,6 +164,8 @@ class App:
         for projectile in self.projectiles:
             projectile.draw()
 
+        for powerup in self.powerups:
+            powerup.draw()
 
 if __name__ == '__main__':
     App()
