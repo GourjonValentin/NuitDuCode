@@ -123,6 +123,7 @@ class App:
         self.projectiles = []
         self.reload = 0
         self.items = []
+        self.score = 0
 
         self.enemies = [Enemy(0, 0, 0), Enemy(0, 16, 1), Enemy(0, 32, 2)]
 
@@ -213,6 +214,8 @@ class App:
 
         for i in self.items:
             i.draw()
+
+        pyxel.text(WIDTH - 60, HEIGHT - BOTTOM * 0.6, 'Score: ' + str(self.score), 7)
 
 if __name__ == '__main__':
     App()
