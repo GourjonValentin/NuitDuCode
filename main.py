@@ -9,6 +9,8 @@ COLOR_KEY = 5
 BG_COLOR = 1
 FOOTER_COLOR = 12
 
+MAX_LIFE = 5
+
 EXPLOSION_ANIMATION = [(16, 104), (32, 104), (48, 104), (0, 120), (16, 120)]
 
 GAME_STATE = {'START_SCREEN': 0, 'GAME': 1, 'GAME_OVER': 2, 'PAUSE': 3}
@@ -87,7 +89,7 @@ class Enemy:
         self.y = y
         self.w = 16
         self.h = 16
-        self.speed = 1
+        self.speed = 0.5
         self.enemy_type = e_type
         self.tilemap_coord = [16 * (self.enemy_type % 4), 16 * (self.enemy_type // 4) + 40]
         self.disable = False
@@ -96,7 +98,7 @@ class Enemy:
     def update(self):
         if not self.disable:
             self.frame = self.frame + 1
-            self.x += pyxel.sin(self.frame * 10) * 0.5
+            self.x += pyxel.sin(self.frame * 5) * 2
             self.y += self.speed
             if self.y > pyxel.height - self.h - BOTTOM:
                 self.y = 0
@@ -149,8 +151,8 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def spawn_item(self, x, y):
-        if pyxel.rndi(0, FPS * 10) == 1:
-            if pyxel.rndi(0, 2) == 0:
+        if pyxel.rndi(1, 20) == 1:
+            if pyxel.rndi(0, 1) == 0:
                 self.items.append(PowerUp(x, y))
             else:
                 self.items.append(Heal(x, y))
@@ -186,23 +188,23 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
         if self.ship.tier == 1:
-            if pyxel.btnp(pyxel.KEY_SPACE, 0, 10) and self.reload < 0:
+            if pyxel.btnp(pyxel.KEY_SPACE, 0, FPS//4) and self.reload < 0:
                 self.projectiles.append(Projectiles(self.ship.x, self.ship.y - 15))
-                self.reload = 7
+                self.reload = FPS/4
         if self.ship.tier == 2:
-            if pyxel.btnp(pyxel.KEY_SPACE, 0, 5) and self.reload < 0:
+            if pyxel.btnp(pyxel.KEY_SPACE, 0, FPS//8) and self.reload < 0:
                 self.projectiles.append(Projectiles(self.ship.x, self.ship.y - 15))
-                self.reload = 4
+                self.reload = FPS/8
         if self.ship.tier == 3:
-            if pyxel.btnp(pyxel.KEY_SPACE, 0, 10) and self.reload < 0:
+            if pyxel.btnp(pyxel.KEY_SPACE, 0, FPS//4) and self.reload < 0:
                 self.projectiles.append(Projectiles(self.ship.x - 6, self.ship.y - 15))
                 self.projectiles.append(Projectiles(self.ship.x + 6, self.ship.y - 15))
-                self.reload = 7
+                self.reload = FPS/4
         if self.ship.tier == 4:
-            if pyxel.btnp(pyxel.KEY_SPACE, 0, 5) and self.reload < 0:
+            if pyxel.btnp(pyxel.KEY_SPACE, 0, FPS//8) and self.reload < 0:
                 self.projectiles.append(Projectiles(self.ship.x - 6, self.ship.y - 15))
                 self.projectiles.append(Projectiles(self.ship.x + 6, self.ship.y - 15))
-                self.reload = 4
+                self.reload = FPS/8
         self.reload -= 1
 
         if self.projectiles:
@@ -230,12 +232,16 @@ class App:
         if self.items:
             for i in self.items:
                 i.update()
-                if i.y > pyxel.height - BOTTOM:
+                if i.y > pyxel.height - BOTTOM - i.h:
                     self.items.remove(i)
 
         for i in self.items:
             if i.x < self.ship.x + self.ship.w and i.x + i.w > self.ship.x and i.y < self.ship.y + self.ship.h and i.y + i.h > self.ship.y:
-                self.ship.upgrade()
+                if isinstance(i, Heal):
+                    if self.ship.vie < MAX_LIFE:
+                        self.ship.vie += 1
+                elif isinstance(i, PowerUp):
+                    self.ship.upgrade()
                 self.items.remove(i)
 
         if not self.enemies:
