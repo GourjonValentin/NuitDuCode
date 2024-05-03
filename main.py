@@ -139,6 +139,7 @@ class App:
                 self.ship.vie -= 1
                 self.enemies.remove(enemy)
 
+
             # Check collision with projectiles
             for projectile in self.projectiles:
                 if (projectile.x < enemy.x + enemy.w and
@@ -147,6 +148,7 @@ class App:
                         projectile.y + projectile.h > enemy.y):
                     self.enemies.remove(enemy)
                     self.projectiles.remove(projectile)
+                    self.score += FPS * 5
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
