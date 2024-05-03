@@ -105,10 +105,8 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        if pyxel.btnp(pyxel.KEY_SPACE) and self.reload < 0:
+        if pyxel.btnp(pyxel.KEY_SPACE):
             self.projectiles.append(Projectiles(self.ship.x, self.ship.y))
-            self.reload = 20
-        self.reload -= 1
 
         if self.projectiles:
             for projectile in self.projectiles:
