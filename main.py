@@ -273,6 +273,16 @@ class App:
         if self.game_state == GAME_STATE['START_SCREEN']:
             pyxel.cls(BG_COLOR)
             pyxel.rect(0, pyxel.height - BOTTOM, pyxel.width, pyxel.height, FOOTER_COLOR)
+            pyxel.text(WIDTH * 0.40, HEIGHT * 0.2, 'Space Shooter', 7)
+            pyxel.text(WIDTH * 0.15, HEIGHT * 0.37, 'Commande ', 7)
+            pyxel.text(WIDTH * 0.15, HEIGHT * 0.43, 'Haut : fleche du haut ', 7)
+            pyxel.text(WIDTH * 0.15, HEIGHT * 0.46, 'Bas : fleche du bas ', 7)
+            pyxel.text(WIDTH * 0.15, HEIGHT * 0.49, 'Gauche : fleche de gauche ', 7)
+            pyxel.text(WIDTH * 0.15, HEIGHT * 0.52, 'Droite : fleche de droite ', 7)
+            pyxel.text(WIDTH * 0.15, HEIGHT * 0.55, 'Tirer : espace ', 7)
+            pyxel.text(WIDTH * 0.15, HEIGHT * 0.58, 'Pause : P ', 7)
+            pyxel.text(WIDTH * 0.15, HEIGHT * 0.61, 'Quitter : Q ', 7)
+            pyxel.text(WIDTH * 0.55, HEIGHT * 0.85, 'Fait par Valentin & Tristan', 7)
             pyxel.text(WIDTH * 0.35, HEIGHT - BOTTOM * 0.6, 'Press Space to start', 7)
 
         elif self.game_state == GAME_STATE['GAME']:
