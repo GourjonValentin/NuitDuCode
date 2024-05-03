@@ -1,6 +1,6 @@
 import pyxel
 
-FPS = 30
+FPS = 60
 WIDTH = 256
 HEIGHT = 256
 BOTTOM = 20
@@ -8,6 +8,8 @@ BOTTOM = 20
 COLOR_KEY = 5
 BG_COLOR = 1
 FOOTER_COLOR = 12
+
+EXPLOSION_ANIMATION = [(16, 104), (32, 104), (48, 104), (0, 120), (16, 120)]
 
 
 class Ship:
@@ -62,12 +64,18 @@ class Projectiles:
         self.h = 16
         self.speed = 4
         self.tilemap_coord = [0, 104]
+        self.frame = 0
+        self.disable = False
 
     def update(self):
-        self.y -= self.speed
+        if not self.disable:
+            self.y -= self.speed
 
     def draw(self):
-        pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, COLOR_KEY)
+        if not self.disable:
+            pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, COLOR_KEY)
+        else:
+            pyxel.blt(self.x, self.y, 0, EXPLOSION_ANIMATION[self.frame][0], EXPLOSION_ANIMATION[self.frame][1], self.w, self.h, COLOR_KEY)
 
 
 class Enemy:
@@ -128,9 +136,9 @@ class App:
         self.projectiles = []
         self.reload = 0
         self.items = []
+        self.current_round = 0
+        self.enemies = []
         self.score = 0
-
-        self.enemies = [Enemy(0, 0, 0), Enemy(0, 16, 1), Enemy(0, 32, 2)]
 
         pyxel.run(self.update, self.draw)
 
@@ -158,9 +166,15 @@ class App:
                         projectile.y < enemy.y + enemy.h and
                         projectile.y + projectile.h > enemy.y):
                     self.enemies.remove(enemy)
-                    self.projectiles.remove(projectile)
+                    projectile.disable = True
                     self.score += FPS * 5
                     self.spawn_item(projectile.x, projectile.y)
+
+
+    def enemy_spawn(self):
+        for i in range(self.current_round*10):
+            coord = (pyxel.rndi(0, pyxel.width), pyxel.rndi(0, -pyxel.height))
+            self.enemies.append(Enemy(coord[0], coord[1], pyxel.rndi(0, 7)))
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
@@ -188,8 +202,13 @@ class App:
         if self.projectiles:
             for projectile in self.projectiles:
                 projectile.update()
-                if projectile.y < -16:
+                if projectile.y + projectile.h < 0:
                     self.projectiles.remove(projectile)
+
+                if projectile.disable:
+                    projectile.frame += 1
+                    if projectile.frame >= len(EXPLOSION_ANIMATION):
+                        self.projectiles.remove(projectile)
 
         for enemy in self.enemies:
             enemy.update()
@@ -212,6 +231,10 @@ class App:
             if i.x < self.ship.x + self.ship.w and i.x + i.w > self.ship.x and i.y < self.ship.y + self.ship.h and i.y + i.h > self.ship.y:
                 self.ship.upgrade()
                 self.items.remove(i)
+
+        if not self.enemies:
+            self.current_round += 1
+            self.enemy_spawn()
 
         self.ship.update()
 
