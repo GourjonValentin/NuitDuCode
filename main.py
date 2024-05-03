@@ -173,7 +173,7 @@ class App:
         if self.projectiles:
             for projectile in self.projectiles:
                 projectile.update()
-                if projectile.y < 0:
+                if projectile.y < -16:
                     self.projectiles.remove(projectile)
 
         for enemy in self.enemies:
