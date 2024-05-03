@@ -156,7 +156,7 @@ class App:
 
     def spawn_item(self, x, y):
         if pyxel.rndi(0, 20) == 1:
-            if pyxel.rndi(0, 2) == 0:
+            if pyxel.rndi(0, 1) == 0:
                 self.items.append(PowerUp(x, y))
             else:
                 self.items.append(Heal(x, y))
