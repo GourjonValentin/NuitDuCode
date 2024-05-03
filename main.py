@@ -11,6 +11,8 @@ FOOTER_COLOR = 12
 
 EXPLOSION_ANIMATION = [(16, 104), (32, 104), (48, 104), (0, 120), (16, 120)]
 
+GAME_STATE = {'START_SCREEN': 0, 'GAME': 1, 'GAME_OVER': 2, 'PAUSE': 3}
+
 
 class Ship:
     def __init__(self, x, y):
@@ -75,7 +77,8 @@ class Projectiles:
         if not self.disable:
             pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, COLOR_KEY)
         else:
-            pyxel.blt(self.x, self.y, 0, EXPLOSION_ANIMATION[self.frame][0], EXPLOSION_ANIMATION[self.frame][1], self.w, self.h, COLOR_KEY)
+            pyxel.blt(self.x, self.y, 0, EXPLOSION_ANIMATION[self.frame][0], EXPLOSION_ANIMATION[self.frame][1], self.w,
+                      self.h, COLOR_KEY)
 
 
 class Enemy:
@@ -102,6 +105,7 @@ class Enemy:
     def draw(self):
         pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, COLOR_KEY)
 
+
 class Item:
     def __init__(self, x, y):
         self.x = x
@@ -118,7 +122,7 @@ class Item:
         pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, COLOR_KEY)
 
 
-class PowerUp (Item):
+class PowerUp(Item):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.tilemap_coord = [48, 80]
@@ -127,6 +131,7 @@ class Heal (Item):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.tilemap_coord = [40, 80]
+
 
 class App:
     def __init__(self):
@@ -158,21 +163,20 @@ class App:
                 self.ship.vie -= 1
                 self.enemies.remove(enemy)
 
-
             # Check collision with projectiles
             for projectile in self.projectiles:
                 if (projectile.x < enemy.x + enemy.w and
                         projectile.x + projectile.w > enemy.x and
                         projectile.y < enemy.y + enemy.h and
                         projectile.y + projectile.h > enemy.y):
-                    self.enemies.remove(enemy)
-                    projectile.disable = True
-                    self.score += FPS * 5
-                    self.spawn_item(projectile.x, projectile.y)
-
+                    if enemy in self.enemies:
+                        self.enemies.remove(enemy)
+                        projectile.disable = True
+                        self.score += FPS * 5
+                          self.spawn_item(projectile.x, projectile.y)
 
     def enemy_spawn(self):
-        for i in range(self.current_round*10):
+        for i in range(self.current_round * 10):
             coord = (pyxel.rndi(0, pyxel.width), pyxel.rndi(0, -pyxel.height))
             self.enemies.append(Enemy(coord[0], coord[1], pyxel.rndi(0, 7)))
 
@@ -253,6 +257,7 @@ class App:
             i.draw()
 
         pyxel.text(WIDTH - 60, HEIGHT - BOTTOM * 0.6, 'Score: ' + str(self.score), 7)
+
 
 if __name__ == '__main__':
     App()
