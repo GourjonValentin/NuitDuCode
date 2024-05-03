@@ -10,6 +10,7 @@ BG_COLOR = 1
 FOOTER_COLOR = 12
 
 EXPLOSION_ANIMATION = [(16, 104), (32, 104), (48, 104), (0, 120), (16, 120)]
+ENEMY_ANIMATION = [(0, 72), (8, 72), (16, 72), (24, 72), (32, 72)]
 
 GAME_STATE = {'START_SCREEN': 0, 'GAME': 1, 'GAME_OVER': 2, 'PAUSE': 3}
 
@@ -100,10 +101,11 @@ class Enemy:
             self.y += self.speed
             if self.y > pyxel.height - self.h - BOTTOM:
                 self.y = 0
-                # self.disable = True
+                self.disable = True
 
     def draw(self):
-        pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, COLOR_KEY)
+        if not self.disable:
+            pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, COLOR_KEY)
 
 
 class Item:
@@ -168,10 +170,10 @@ class App:
 
             # Check collision with projectiles
             for projectile in self.projectiles:
-                if (projectile.x < enemy.x + enemy.w and
-                        projectile.x + projectile.w > enemy.x and
-                        projectile.y < enemy.y + enemy.h and
-                        projectile.y + projectile.h > enemy.y):
+                if (projectile.x + 5 < enemy.x + enemy.w - 3 and
+                        projectile.x + projectile.w - 4 > enemy.x + 4 and
+                        projectile.y + 6 < enemy.y + enemy.h - 4 and
+                        projectile.y + projectile.h - 6 > enemy.y + 3):
                     if enemy in self.enemies:
                         self.enemies.remove(enemy)
                         projectile.disable = True
@@ -180,7 +182,7 @@ class App:
 
     def enemy_spawn(self):
         for i in range(self.current_round * 10):
-            coord = (pyxel.rndi(0, pyxel.width), pyxel.rndi(0, -pyxel.height))
+            coord = (pyxel.rndi(0, pyxel.width - 16), pyxel.rndi(0, -pyxel.height))
             self.enemies.append(Enemy(coord[0], coord[1], pyxel.rndi(0, 7)))
 
     def update(self):
@@ -225,6 +227,10 @@ class App:
 
             for enemy in self.enemies:
                 enemy.update()
+                if enemy.disable:
+                    enemy.frame += 1
+                    if enemy.frame >= len(ENEMY_ANIMATION):
+                        self.enemies.remove(enemy)
 
             if self.ship.vie == 0:
                 self.game_state = GAME_STATE['GAME_OVER']
