@@ -164,10 +164,10 @@ class App:
     def enemy_collision(self):
         for enemy in self.enemies:
             # Check collision with player
-            if (self.ship.x < enemy.x + enemy.w and
-                    self.ship.x + self.ship.w > enemy.x and
-                    self.ship.y < enemy.y + enemy.h and
-                    self.ship.y + self.ship.h > enemy.y):
+            if (self.ship.x < enemy.x + enemy.w - 3 and
+                    self.ship.x + self.ship.w > enemy.x + 4 and
+                    self.ship.y + 2 < enemy.y + enemy.h - 4 and
+                    self.ship.y - 2 + self.ship.h > enemy.y + 3):
                 self.ship.vie -= 1
                 self.enemies.remove(enemy)
 
