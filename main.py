@@ -100,7 +100,7 @@ class Item:
         self.w = 8
         self.h = 8
         self.speed = 1
-        self.tilemap_coord = [0, 0]
+        self.tilemap_coord = [0, 72]
 
     def update(self):
         self.y += self.speed
