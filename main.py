@@ -173,8 +173,8 @@ class App:
 
             # Check collision with projectiles
             for projectile in self.projectiles:
-                if (projectile.x + 5 < enemy.x + enemy.w - 3 and
-                        projectile.x + projectile.w - 4 > enemy.x + 4 and
+                if (projectile.x + 7 < enemy.x + enemy.w - 3 and
+                        projectile.x + projectile.w - 6 > enemy.x + 4 and
                         projectile.y + 6 < enemy.y + enemy.h - 4 and
                         projectile.y + projectile.h - 6 > enemy.y + 3):
                     if enemy in self.enemies:
@@ -184,7 +184,7 @@ class App:
                         self.spawn_item(projectile.x, projectile.y)
 
     def enemy_spawn(self):
-        for i in range(pyxel.ceil(math.log(self.current_round + 1, 2) * 10)):
+        for i in range(pyxel.ceil((math.log(self.current_round + 1, 2) * 10) ** 1.5)):
             coord = (pyxel.rndi(0, pyxel.width - 16), pyxel.rndi(0, -pyxel.height))
             self.enemies.append(Enemy(coord[0], coord[1], pyxel.rndi(0, 7)))
 
@@ -246,7 +246,7 @@ class App:
             if self.items:
                 for i in self.items:
                     i.update()
-                    if i.y > pyxel.height - BOTTOM:
+                    if i.y > pyxel.height - BOTTOM - i.h:
                         self.items.remove(i)
 
             for i in self.items:
@@ -313,6 +313,7 @@ class App:
                 i.draw()
 
             pyxel.text(WIDTH - 60, HEIGHT - BOTTOM * 0.6, 'Score: ' + str(self.score), 7)
+            pyxel.text(WIDTH * 0.42, HEIGHT - BOTTOM * 0.6, 'Round: ' + str(self.current_round), 7)
 
         elif self.game_state == GAME_STATE['GAME_OVER']:
             pyxel.cls(BG_COLOR)
