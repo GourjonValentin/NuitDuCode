@@ -297,6 +297,10 @@ class App:
             pyxel.text(WIDTH * 0.15, HEIGHT * 0.61, 'Quitter : Q ', 7)
             pyxel.text(WIDTH * 0.55, HEIGHT * 0.85, 'Fait par Valentin & Tristan', 7)
             pyxel.text(WIDTH * 0.35, HEIGHT - BOTTOM * 0.6, 'Press Space to start', 7)
+            pyxel.blt(35, 180, 0, 48, 80, 8, 8, COLOR_KEY)
+            pyxel.text(45, 180, ' : Ameliore ton vaisseau', 7)
+            pyxel.blt(35, 190, 0, 40, 80, 8, 8, COLOR_KEY)
+            pyxel.text(45, 190, ' : Redonne de la vie', 7)
 
         elif self.game_state == GAME_STATE['GAME']:
             pyxel.cls(BG_COLOR)
