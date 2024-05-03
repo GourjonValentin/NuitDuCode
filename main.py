@@ -9,6 +9,7 @@ COLOR_KEY = 5
 BG_COLOR = 1
 FOOTER_COLOR = 12
 
+
 class Ship:
     def __init__(self, x, y):
         self.x = x
@@ -83,7 +84,7 @@ class Enemy:
             self.y += self.speed
             if self.y > pyxel.height - self.h - BOTTOM:
                 self.y = 0
-                #self.disable = True
+                # self.disable = True
 
     def draw(self):
         pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, COLOR_KEY)
@@ -101,6 +102,25 @@ class App:
 
         pyxel.run(self.update, self.draw)
 
+    def enemy_collision(self):
+        for enemy in self.enemies:
+            # Check collision with player
+            if (self.ship.x < enemy.x + enemy.w and
+                    self.ship.x + self.ship.w > enemy.x and
+                    self.ship.y < enemy.y + enemy.h and
+                    self.ship.y + self.ship.h > enemy.y):
+                self.ship.vie -= 1
+                self.enemies.remove(enemy)
+
+            # Check collision with projectiles
+            for projectile in self.projectiles:
+                if (projectile.x < enemy.x + enemy.w and
+                        projectile.x + projectile.w > enemy.x and
+                        projectile.y < enemy.y + enemy.h and
+                        projectile.y + projectile.h > enemy.y):
+                    self.enemies.remove(enemy)
+                    self.projectiles.remove(projectile)
+
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
@@ -114,6 +134,14 @@ class App:
                 if projectile.y < 0:
                     self.projectiles.remove(projectile)
 
+        for enemy in self.enemies:
+            enemy.update()
+
+        if self.ship.vie == 0:
+            pyxel.quit()
+
+        self.enemy_collision()
+
         self.ship.update()
 
     def draw(self):
@@ -121,7 +149,6 @@ class App:
         pyxel.rect(0, pyxel.height - BOTTOM, pyxel.width, pyxel.height, FOOTER_COLOR)
 
         for enemy in self.enemies:
-            enemy.update()
             enemy.draw()
         self.ship.draw()
 
