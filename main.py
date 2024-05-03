@@ -150,7 +150,7 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def spawn_item(self, x, y):
-        if pyxel.rndi(0, FPS * 10) == 1:
+        if pyxel.rndi(0, 20) == 1:
             if pyxel.rndi(0, 2) == 0:
                 self.items.append(PowerUp(x, y))
             else:
