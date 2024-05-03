@@ -1,4 +1,6 @@
 import pyxel
+
+FPS = 30
 WIDTH = 256
 HEIGHT = 256
 BOTTOM = 20
@@ -89,11 +91,10 @@ class Enemy:
 
 class App:
     def __init__(self):
-        pyxel.init(256, 256, fps=60, title='Hello Pyxel')
+        pyxel.init(WIDTH, HEIGHT, fps=FPS, title='Hello Pyxel')
         pyxel.load('1.pyxres')
         self.ship = Ship(120, 120)
         self.projectiles = []
-        self.ship = Ship(128, 128)
         self.reload = 0
 
         self.enemies = [Enemy(0, 0, 0), Enemy(0, 16, 1), Enemy(0, 32, 2)]
@@ -118,7 +119,7 @@ class App:
         self.ship.update()
 
     def draw(self):
-        pyxel.cls(0)
+        pyxel.cls(BG_COLOR)
         pyxel.rect(0, pyxel.height - BOTTOM, pyxel.width, pyxel.height, FOOTER_COLOR)
 
         for enemy in self.enemies:
