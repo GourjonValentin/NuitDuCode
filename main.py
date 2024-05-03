@@ -10,6 +10,16 @@ class Ship:
         self.speed = 2
         self.tilemap_coord = [0, 0]
 
+    def check_screen_collision(self):
+        if self.x < 0:
+            self.x = 0
+        if self.x > pyxel.width - self.w:
+            self.x = pyxel.width - self.w
+        if self.y < 0:
+            self.y = 0
+        if self.y > pyxel.height - self.h:
+            self.y = pyxel.height - self.h
+
     def update(self):
         if pyxel.btn(pyxel.KEY_LEFT):
             self.x -= self.speed
@@ -19,6 +29,8 @@ class Ship:
             self.y -= self.speed
         if pyxel.btn(pyxel.KEY_DOWN):
             self.y += self.speed
+
+        self.check_screen_collision()
 
     def draw(self):
         pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, 5)
@@ -41,8 +53,9 @@ class Projectiles:
 
 class App:
     def __init__(self):
-        pyxel.init(256, 256, title='Hello Pyxel', fps=60)
+        pyxel.init(256, 256, title='Hello Pyxel')
         pyxel.load('1.pyxres')
+        self.ship = Ship(120, 120)
         self.projectiles = []
         self.ship = Ship(128, 128)
 
@@ -69,10 +82,10 @@ class App:
         pyxel.cls(0)
 
         self.ship.draw()
+
         for projectile in self.projectiles:
             projectile.draw()
 
-        #pyxel.blt(16, 16, 0, 0, 0, 16, 16, 0)
 
 if __name__ == '__main__':
     App()
