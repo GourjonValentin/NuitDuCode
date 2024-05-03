@@ -198,23 +198,23 @@ class App:
             if pyxel.btnp(pyxel.KEY_Q):
                 pyxel.quit()
             if self.ship.tier == 1:
-                if pyxel.btnp(pyxel.KEY_SPACE, 0, 10) and self.reload < 0:
+                if pyxel.btnp(pyxel.KEY_SPACE, 0, FPS//4) and self.reload < 0:
                     self.projectiles.append(Projectiles(self.ship.x, self.ship.y - 15))
-                    self.reload = 7
+                    self.reload = FPS//4
             if self.ship.tier == 2:
-                if pyxel.btnp(pyxel.KEY_SPACE, 0, 5) and self.reload < 0:
+                if pyxel.btnp(pyxel.KEY_SPACE, 0, FPS//8) and self.reload < 0:
                     self.projectiles.append(Projectiles(self.ship.x, self.ship.y - 15))
-                    self.reload = 4
+                    self.reload = FPS//8
             if self.ship.tier == 3:
-                if pyxel.btnp(pyxel.KEY_SPACE, 0, 10) and self.reload < 0:
+                if pyxel.btnp(pyxel.KEY_SPACE, 0, FPS//4) and self.reload < 0:
                     self.projectiles.append(Projectiles(self.ship.x - 6, self.ship.y - 15))
                     self.projectiles.append(Projectiles(self.ship.x + 6, self.ship.y - 15))
-                    self.reload = 7
+                    self.reload = FPS//8
             if self.ship.tier == 4:
-                if pyxel.btnp(pyxel.KEY_SPACE, 0, 5) and self.reload < 0:
+                if pyxel.btnp(pyxel.KEY_SPACE, 0, FPS//8) and self.reload < 0:
                     self.projectiles.append(Projectiles(self.ship.x - 6, self.ship.y - 15))
                     self.projectiles.append(Projectiles(self.ship.x + 6, self.ship.y - 15))
-                    self.reload = 4
+                    self.reload = FPS//8
             self.reload -= 1
 
             if self.projectiles:
