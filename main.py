@@ -115,6 +115,11 @@ class PowerUp (Item):
         super().__init__(x, y)
         self.tilemap_coord = [48, 80]
 
+class Heal (Item):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.tilemap_coord = [40, 80]
+
 class App:
     def __init__(self):
         pyxel.init(WIDTH, HEIGHT, fps=FPS, title='Hello Pyxel')
@@ -129,6 +134,12 @@ class App:
 
         pyxel.run(self.update, self.draw)
 
+    def spawn_item(self, x, y):
+        if pyxel.rndi(0, FPS * 10) == 1:
+            if pyxel.rndi(0, 2) == 0:
+                self.items.append(PowerUp(x, y))
+            else:
+                self.items.append(Heal(x, y))
     def enemy_collision(self):
         for enemy in self.enemies:
             # Check collision with player
@@ -149,6 +160,7 @@ class App:
                     self.enemies.remove(enemy)
                     self.projectiles.remove(projectile)
                     self.score += FPS * 5
+                    self.spawn_item(projectile.x, projectile.y)
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
