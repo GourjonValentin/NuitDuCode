@@ -1,6 +1,6 @@
 import pyxel
 
-FPS = 30
+FPS = 60
 WIDTH = 256
 HEIGHT = 256
 BOTTOM = 20
@@ -123,8 +123,8 @@ class App:
         self.projectiles = []
         self.reload = 0
         self.items = []
-
-        self.enemies = [Enemy(0, 0, 0), Enemy(0, 16, 1), Enemy(0, 32, 2)]
+        self.current_round = 0
+        self.enemies = []
 
         pyxel.run(self.update, self.draw)
 
@@ -147,6 +147,11 @@ class App:
                     self.enemies.remove(enemy)
                     self.projectiles.remove(projectile)
 
+    def enemy_spawn(self):
+        for i in range(self.current_round*10):
+            coord = (pyxel.rndi(0, pyxel.width), pyxel.rndi(0, -pyxel.height))
+            self.enemies.append(Enemy(coord[0], coord[1], pyxel.rndi(0, 7)))
+
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
@@ -159,7 +164,7 @@ class App:
         if self.projectiles:
             for projectile in self.projectiles:
                 projectile.update()
-                if projectile.y < 0:
+                if projectile.y + projectile.h < 0:
                     self.projectiles.remove(projectile)
 
         for enemy in self.enemies:
@@ -183,6 +188,10 @@ class App:
             if i.x < self.ship.x + self.ship.w and i.x + i.w > self.ship.x and i.y < self.ship.y + self.ship.h and i.y + i.h > self.ship.y:
                 self.ship.upgrade()
                 self.items.remove(i)
+
+        if not self.enemies:
+            self.current_round += 1
+            self.enemy_spawn()
 
         self.ship.update()
 
