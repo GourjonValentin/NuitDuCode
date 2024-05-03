@@ -138,6 +138,7 @@ class App:
     def __init__(self):
         pyxel.init(WIDTH, HEIGHT, fps=FPS, title='Hello Pyxel')
         pyxel.load('1.pyxres')
+        self.game_state = GAME_STATE['START_SCREEN']
         self.ship = Ship(120, 120)
         self.projectiles = []
         self.reload = 0
@@ -183,82 +184,138 @@ class App:
             self.enemies.append(Enemy(coord[0], coord[1], pyxel.rndi(0, 7)))
 
     def update(self):
-        if pyxel.btnp(pyxel.KEY_Q):
-            pyxel.quit()
-        if self.ship.tier == 1:
-            if pyxel.btnp(pyxel.KEY_SPACE, 0, 10) and self.reload < 0:
-                self.projectiles.append(Projectiles(self.ship.x, self.ship.y - 15))
-                self.reload = 7
-        if self.ship.tier == 2:
-            if pyxel.btnp(pyxel.KEY_SPACE, 0, 5) and self.reload < 0:
-                self.projectiles.append(Projectiles(self.ship.x, self.ship.y - 15))
-                self.reload = 4
-        if self.ship.tier == 3:
-            if pyxel.btnp(pyxel.KEY_SPACE, 0, 10) and self.reload < 0:
-                self.projectiles.append(Projectiles(self.ship.x - 6, self.ship.y - 15))
-                self.projectiles.append(Projectiles(self.ship.x + 6, self.ship.y - 15))
-                self.reload = 7
-        if self.ship.tier == 4:
-            if pyxel.btnp(pyxel.KEY_SPACE, 0, 5) and self.reload < 0:
-                self.projectiles.append(Projectiles(self.ship.x - 6, self.ship.y - 15))
-                self.projectiles.append(Projectiles(self.ship.x + 6, self.ship.y - 15))
-                self.reload = 4
-        self.reload -= 1
 
-        if self.projectiles:
-            for projectile in self.projectiles:
-                projectile.update()
-                if projectile.y + projectile.h < 0:
-                    self.projectiles.remove(projectile)
+        if self.game_state == GAME_STATE['START_SCREEN']:
+            if pyxel.btnp(pyxel.KEY_SPACE):
+                self.game_state = GAME_STATE['GAME']
+                self.enemy_spawn()
+        elif self.game_state == GAME_STATE['GAME']:
+            if pyxel.btnp(pyxel.KEY_Q):
+                pyxel.quit()
+            if self.ship.tier == 1:
+                if pyxel.btnp(pyxel.KEY_SPACE, 0, 10) and self.reload < 0:
+                    self.projectiles.append(Projectiles(self.ship.x, self.ship.y - 15))
+                    self.reload = 7
+            if self.ship.tier == 2:
+                if pyxel.btnp(pyxel.KEY_SPACE, 0, 5) and self.reload < 0:
+                    self.projectiles.append(Projectiles(self.ship.x, self.ship.y - 15))
+                    self.reload = 4
+            if self.ship.tier == 3:
+                if pyxel.btnp(pyxel.KEY_SPACE, 0, 10) and self.reload < 0:
+                    self.projectiles.append(Projectiles(self.ship.x - 6, self.ship.y - 15))
+                    self.projectiles.append(Projectiles(self.ship.x + 6, self.ship.y - 15))
+                    self.reload = 7
+            if self.ship.tier == 4:
+                if pyxel.btnp(pyxel.KEY_SPACE, 0, 5) and self.reload < 0:
+                    self.projectiles.append(Projectiles(self.ship.x - 6, self.ship.y - 15))
+                    self.projectiles.append(Projectiles(self.ship.x + 6, self.ship.y - 15))
+                    self.reload = 4
+            self.reload -= 1
 
-                if projectile.disable:
-                    projectile.frame += 1
-                    if projectile.frame >= len(EXPLOSION_ANIMATION):
+            if self.projectiles:
+                for projectile in self.projectiles:
+                    projectile.update()
+                    if projectile.y + projectile.h < 0:
                         self.projectiles.remove(projectile)
 
-        for enemy in self.enemies:
-            enemy.update()
+                    if projectile.disable:
+                        projectile.frame += 1
+                        if projectile.frame >= len(EXPLOSION_ANIMATION):
+                            self.projectiles.remove(projectile)
 
-        if self.ship.vie == 0:
-            pyxel.quit()
+            for enemy in self.enemies:
+                enemy.update()
 
-        self.enemy_collision()
+            if self.ship.vie == 0:
+                self.game_state = GAME_STATE['GAME_OVER']
 
-        if pyxel.btnp(pyxel.KEY_R):
-            self.items.append(PowerUp(50, 50))
+            self.enemy_collision()
 
-        if self.items:
+            if pyxel.btnp(pyxel.KEY_R):
+                self.items.append(PowerUp(50, 50))
+
+            if self.items:
+                for i in self.items:
+                    i.update()
+                    if i.y > pyxel.height - BOTTOM:
+                        self.items.remove(i)
+
             for i in self.items:
-                i.update()
-                if i.y > pyxel.height - BOTTOM:
+                if i.x < self.ship.x + self.ship.w and i.x + i.w > self.ship.x and i.y < self.ship.y + self.ship.h and i.y + i.h > self.ship.y:
+                    self.ship.upgrade()
                     self.items.remove(i)
 
-        for i in self.items:
-            if i.x < self.ship.x + self.ship.w and i.x + i.w > self.ship.x and i.y < self.ship.y + self.ship.h and i.y + i.h > self.ship.y:
-                self.ship.upgrade()
-                self.items.remove(i)
+            if not self.enemies:
+                self.current_round += 1
+                self.enemy_spawn()
 
-        if not self.enemies:
-            self.current_round += 1
-            self.enemy_spawn()
+            self.ship.update()
 
-        self.ship.update()
+            if pyxel.btnp(pyxel.KEY_P):
+                self.game_state = GAME_STATE['PAUSE']
+
+        elif self.game_state == GAME_STATE['GAME_OVER']:
+            if pyxel.btnp(pyxel.KEY_SPACE):
+                self.game_state = GAME_STATE['START_SCREEN']
+                self.ship = Ship(120, 120)
+                self.projectiles = []
+                self.reload = 0
+                self.items = []
+                self.current_round = 0
+                self.enemies = []
+                self.score = 0
+
+        elif self.game_state == GAME_STATE['PAUSE']:
+            if pyxel.btnp(pyxel.KEY_SPACE):
+                self.game_state = GAME_STATE['GAME']
 
     def draw(self):
-        pyxel.cls(BG_COLOR)
-        pyxel.rect(0, pyxel.height - BOTTOM, pyxel.width, pyxel.height, FOOTER_COLOR)
+        if self.game_state == GAME_STATE['START_SCREEN']:
+            pyxel.cls(BG_COLOR)
+            pyxel.rect(0, pyxel.height - BOTTOM, pyxel.width, pyxel.height, FOOTER_COLOR)
+            pyxel.text(WIDTH * 0.35, HEIGHT - BOTTOM * 0.6, 'Press Space to start', 7)
 
-        for enemy in self.enemies:
-            enemy.draw()
-        self.ship.draw()
+        elif self.game_state == GAME_STATE['GAME']:
+            pyxel.cls(BG_COLOR)
+            pyxel.rect(0, pyxel.height - BOTTOM, pyxel.width, pyxel.height, FOOTER_COLOR)
 
-        for projectile in self.projectiles:
-            projectile.draw()
+            for enemy in self.enemies:
+                enemy.draw()
+            self.ship.draw()
 
-        for i in self.items:
-            i.draw()
+            for projectile in self.projectiles:
+                projectile.draw()
 
-        pyxel.text(WIDTH - 60, HEIGHT - BOTTOM * 0.6, 'Score: ' + str(self.score), 7)
+            for i in self.items:
+                i.draw()
+
+            pyxel.text(WIDTH - 60, HEIGHT - BOTTOM * 0.6, 'Score: ' + str(self.score), 7)
+
+        elif self.game_state == GAME_STATE['GAME_OVER']:
+            pyxel.cls(BG_COLOR)
+            pyxel.rect(0, pyxel.height - BOTTOM, pyxel.width, pyxel.height, FOOTER_COLOR)
+            pyxel.text(WIDTH * 0.43, HEIGHT * 0.3, 'Game Over', 7)
+            pyxel.text(WIDTH * (0.45 - 0.01*len(str(self.score))), HEIGHT * 0.5, 'Score: ' + str(self.score), 7)
+            pyxel.text(WIDTH * 0.33, HEIGHT * 0.7, 'Press Space to restart', 7)
+
+        elif self.game_state == GAME_STATE['PAUSE']:
+            pyxel.cls(BG_COLOR)
+            pyxel.rect(0, pyxel.height - BOTTOM, pyxel.width, pyxel.height, FOOTER_COLOR)
+
+            for enemy in self.enemies:
+                enemy.draw()
+            self.ship.draw()
+
+            for projectile in self.projectiles:
+                projectile.draw()
+
+            for i in self.items:
+                i.draw()
+
+
+            pyxel.text(WIDTH - 60, HEIGHT - BOTTOM * 0.6, 'Score: ' + str(self.score), 7)
+            pyxel.text(WIDTH * 0.45, HEIGHT - BOTTOM * 0.8, 'Pause', 7)
+            pyxel.text(WIDTH * 0.35, HEIGHT - BOTTOM * 0.4, 'Press Space to resume', 7)
 
 
 if __name__ == '__main__':
