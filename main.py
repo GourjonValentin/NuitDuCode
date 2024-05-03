@@ -93,20 +93,25 @@ class Enemy:
     def draw(self):
         pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, COLOR_KEY)
 
-class PowerUp:
+class Item:
     def __init__(self, x, y):
         self.x = x
         self.y = y
         self.w = 8
         self.h = 8
         self.speed = 1
-        self.tilemap_coord = [48, 80]
 
     def update(self):
         self.y += self.speed
 
     def draw(self):
         pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, COLOR_KEY)
+
+
+class PowerUp (Item):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.tilemap_coord = [48, 80]
 
 class App:
     def __init__(self):
@@ -115,7 +120,7 @@ class App:
         self.ship = Ship(120, 120)
         self.projectiles = []
         self.reload = 0
-        self.powerups = []
+        self.items = []
 
         self.enemies = [Enemy(0, 0, 0), Enemy(0, 16, 1), Enemy(0, 32, 2)]
 
@@ -137,18 +142,18 @@ class App:
                     self.projectiles.remove(projectile)
 
         if pyxel.btnp(pyxel.KEY_R):
-            self.powerups.append(PowerUp(50, 50))
+            self.items.append(PowerUp(50, 50))
 
-        if self.powerups:
-            for powerup in self.powerups:
-                powerup.update()
-                if powerup.y > pyxel.height - BOTTOM:
-                    self.powerups.remove(powerup)
+        if self.items:
+            for i in self.items:
+                i.update()
+                if i.y > pyxel.height - BOTTOM:
+                    self.items.remove(i)
 
-        for powerup in self.powerups:
-            if powerup.x < self.ship.x + self.ship.w and powerup.x + powerup.w > self.ship.x and powerup.y < self.ship.y + self.ship.h and powerup.y + powerup.h > self.ship.y:
+        for i in self.items:
+            if i.x < self.ship.x + self.ship.w and i.x + i.w > self.ship.x and i.y < self.ship.y + self.ship.h and i.y + i.h > self.ship.y:
                 self.ship.upgrade()
-                self.powerups.remove(powerup)
+                self.items.remove(i)
 
         self.ship.update()
 
@@ -164,8 +169,8 @@ class App:
         for projectile in self.projectiles:
             projectile.draw()
 
-        for powerup in self.powerups:
-            powerup.draw()
+        for i in self.items:
+            i.draw()
 
 if __name__ == '__main__':
     App()
