@@ -9,6 +9,8 @@ COLOR_KEY = 5
 BG_COLOR = 1
 FOOTER_COLOR = 12
 
+EXPLOSION_ANIMATION = [(16, 104), (32, 104), (48, 104), (0, 120), (16, 120)]
+
 
 class Ship:
     def __init__(self, x, y):
@@ -62,12 +64,18 @@ class Projectiles:
         self.h = 16
         self.speed = 4
         self.tilemap_coord = [0, 104]
+        self.frame = 0
+        self.disable = False
 
     def update(self):
-        self.y -= self.speed
+        if not self.disable:
+            self.y -= self.speed
 
     def draw(self):
-        pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, COLOR_KEY)
+        if not self.disable:
+            pyxel.blt(self.x, self.y, 0, self.tilemap_coord[0], self.tilemap_coord[1], self.w, self.h, COLOR_KEY)
+        else:
+            pyxel.blt(self.x, self.y, 0, EXPLOSION_ANIMATION[self.frame][0], EXPLOSION_ANIMATION[self.frame][1], self.w, self.h, COLOR_KEY)
 
 
 class Enemy:
@@ -145,7 +153,9 @@ class App:
                         projectile.y < enemy.y + enemy.h and
                         projectile.y + projectile.h > enemy.y):
                     self.enemies.remove(enemy)
-                    self.projectiles.remove(projectile)
+
+                    projectile.disable = True
+
 
     def enemy_spawn(self):
         for i in range(self.current_round*10):
@@ -166,6 +176,11 @@ class App:
                 projectile.update()
                 if projectile.y + projectile.h < 0:
                     self.projectiles.remove(projectile)
+
+                if projectile.disable:
+                    projectile.frame += 1
+                    if projectile.frame >= len(EXPLOSION_ANIMATION):
+                        self.projectiles.remove(projectile)
 
         for enemy in self.enemies:
             enemy.update()
