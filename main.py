@@ -235,7 +235,7 @@ class App:
                     if enemy.frame >= len(ENEMY_ANIMATION):
                         self.enemies.remove(enemy)
 
-            if self.ship.vie < 0:
+            if self.ship.vie <= 0:
                 self.game_state = GAME_STATE['GAME_OVER']
 
             self.enemy_collision()
