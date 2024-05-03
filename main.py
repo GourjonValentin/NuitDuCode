@@ -77,9 +77,9 @@ class Enemy:
     def update(self):
         if not self.disable:
             self.frame = self.frame + 1
-            self.x += pyxel.sin(self.frame *10) * 0.5
+            self.x += pyxel.sin(self.frame * 10) * 0.5
             self.y += self.speed
-            if self.y > pyxel.height - BOTTOM:
+            if self.y > pyxel.height - self.h - BOTTOM:
                 self.y = 0
                 #self.disable = True
 
