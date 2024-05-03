@@ -19,7 +19,7 @@ class Ship:
         self.speed = 2
         self.vie = 3
         self.tilemap_coord = [0, 8]
-        self.tier = 0
+        self.tier = 1
 
     def check_screen_collision(self):
         if self.x < 0:
@@ -49,7 +49,7 @@ class Ship:
             pyxel.blt(10 + (i * 8), 243, 0, 40, 80, 8, 8, 5)
 
     def upgrade(self):
-        if self.tier < 3:
+        if self.tier < 4:
             self.tilemap_coord[0] += 16
             self.tier += 1
 
@@ -150,10 +150,24 @@ class App:
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
-
-        if pyxel.btnp(pyxel.KEY_SPACE, 0, 10) and self.reload < 0:
-            self.projectiles.append(Projectiles(self.ship.x, self.ship.y))
-            self.reload = 7
+        if self.ship.tier == 1:
+            if pyxel.btnp(pyxel.KEY_SPACE, 0, 10) and self.reload < 0:
+                self.projectiles.append(Projectiles(self.ship.x, self.ship.y - 15))
+                self.reload = 7
+        if self.ship.tier == 2:
+            if pyxel.btnp(pyxel.KEY_SPACE, 0, 5) and self.reload < 0:
+                self.projectiles.append(Projectiles(self.ship.x, self.ship.y - 15))
+                self.reload = 4
+        if self.ship.tier == 3:
+            if pyxel.btnp(pyxel.KEY_SPACE, 0, 10) and self.reload < 0:
+                self.projectiles.append(Projectiles(self.ship.x - 6, self.ship.y - 15))
+                self.projectiles.append(Projectiles(self.ship.x + 6, self.ship.y - 15))
+                self.reload = 7
+        if self.ship.tier == 4:
+            if pyxel.btnp(pyxel.KEY_SPACE, 0, 5) and self.reload < 0:
+                self.projectiles.append(Projectiles(self.ship.x - 6, self.ship.y - 15))
+                self.projectiles.append(Projectiles(self.ship.x + 6, self.ship.y - 15))
+                self.reload = 4
         self.reload -= 1
 
         if self.projectiles:
