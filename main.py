@@ -141,7 +141,7 @@ class Heal(Item):
 
 class App:
     def __init__(self):
-        pyxel.init(WIDTH, HEIGHT, fps=FPS, title='Hello Pyxel')
+        pyxel.init(WIDTH, HEIGHT, fps=FPS, title='Space Shooter')
         pyxel.load('1.pyxres')
         self.game_state = GAME_STATE['START_SCREEN']
         self.ship = Ship(120, 120)
